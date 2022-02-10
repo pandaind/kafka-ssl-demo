@@ -1,0 +1,77 @@
+version: '3'
+services:
+
+  zookeeper:
+    image: strimzi/zookeeper
+    hostname: zookeeper
+    command: [
+      "sh", "-c",
+      "bin/zookeeper-server-start.sh config/zookeeper.properties"
+    ]
+    ports:
+      - "2181:2181"
+    environment:
+      LOG_DIR: /tmp/logs
+
+  kafka1:
+    image: strimzi/kafka:latest-kafka-2.6.0
+    hostname: kafka1
+    # command: [
+    #   "sh", "-c",
+    #   "bin/kafka-server-start.sh config/server.properties --override zookeeper.connect=$${KAFKA_ZOOKEEPER_CONNECT}"
+    # ]
+    command: [
+      "sh", "-c",
+      "bin/kafka-server-start.sh config/server_domain.properties --override zookeeper.connect=$${KAFKA_ZOOKEEPER_CONNECT}"
+    ]
+    depends_on:
+      - zookeeper
+    ports:
+      - "9093:9093"
+    environment:
+      LOG_DIR: "/tmp/logs"
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+    volumes:
+      - ./kafka1/config:/opt/kafka/config
+
+  # kafka2:
+  #   image: strimzi/kafka:latest-kafka-2.6.0
+  #   hostname: kafka2
+  #   # command: [
+  #   #   "sh", "-c",
+  #   #   "bin/kafka-server-start.sh config/server.properties --override zookeeper.connect=$${KAFKA_ZOOKEEPER_CONNECT}"
+  #   # ]
+  #   command: [
+  #     "sh", "-c",
+  #     "bin/kafka-server-start.sh config/server_domain.properties --override zookeeper.connect=$${KAFKA_ZOOKEEPER_CONNECT}"
+  #   ]
+  #   depends_on:
+  #     - zookeeper
+  #   ports:
+  #     - "9094:9094"
+  #   environment:
+  #     LOG_DIR: "/tmp/logs"
+  #     KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+  #   volumes:
+  #     - ./kafka2/config:/opt/kafka/config
+
+  # kafka3:
+  #   image: strimzi/kafka:latest-kafka-2.6.0
+  #   hostname: kafka3
+  #   # command: [
+  #   #   "sh", "-c",
+  #   #   "bin/kafka-server-start.sh config/server.properties --override zookeeper.connect=$${KAFKA_ZOOKEEPER_CONNECT}"
+  #   # ]
+  #   command: [
+  #     "sh", "-c",
+  #     "bin/kafka-server-start.sh config/server_domain.properties --override zookeeper.connect=$${KAFKA_ZOOKEEPER_CONNECT}"
+  #   ]
+  #   depends_on:
+  #     - zookeeper
+  #   ports:
+  #     - "9095:9095"
+  #   environment:
+  #     LOG_DIR: "/tmp/logs"
+  #     KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+  #   volumes:
+  #     - ./kafka3/config:/opt/kafka/config
